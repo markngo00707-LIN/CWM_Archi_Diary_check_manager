@@ -1,0 +1,2320 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="SALARY_PAGE_TITLE">薪資管理系統 - 出勤管家</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .icon-box {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icon-box::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .salary-icon {
+            width: 48px;
+            height: 48px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .header-title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-title p {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+
+        .back-btn {
+            padding: 0.75rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .permission-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            color: #60a5fa;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .feature-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .feature-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 2px;
+        }
+
+        .month-selector {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .month-selector label {
+            font-weight: 600;
+            color: #10b981;
+        }
+
+        .month-selector input {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .month-selector button {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .month-selector button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #94a3b8;
+        }
+
+        .empty-state-text {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-label.required::after {
+            content: ' *';
+            color: #f87171;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            padding: 0.875rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #10b981;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-input::placeholder {
+            color: #64748b;
+        }
+
+        .form-hint {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        .auto-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .section-divider {
+            margin: 2rem 0;
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        }
+
+        .section-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #10b981;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .salary-preview {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.15) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: #fff;
+            margin-top: 2rem;
+        }
+
+        .salary-preview-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #10b981;
+        }
+
+        .salary-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .salary-preview-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .salary-preview-item:last-child {
+            border-bottom: none;
+        }
+
+        .salary-preview-total {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: right;
+            margin-top: 0.5rem;
+            padding-top: 1rem;
+            border-top: 2px solid rgba(16, 185, 129, 0.3);
+            color: #10b981;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1.5rem;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+
+        .info-label {
+            font-size: 0.875rem;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .calculation-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .calculation-card h3 {
+            color: #10b981;
+            margin-bottom: 1.5rem;
+        }
+
+        .calculation-detail {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .calculation-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #e2e8f0;
+        }
+
+        .calculation-row:last-child {
+            border-bottom: none;
+        }
+
+        .calculation-row.total {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #10b981;
+            padding-top: 1rem;
+            margin-top: 0.5rem;
+            border-top: 2px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: #1f2937;
+            border-radius: 12px;
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            display: none;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .notification.show {
+            display: block;
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .notification.info {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+        
+        /* ⭐⭐⭐ 在這裡加入 Windows 下拉選單修正 ⭐⭐⭐ */
+        /* ==================== 修正 Windows 下拉選單顯示問題 ==================== */
+        select.form-select,
+        #config-employee-select,
+        #calc-employee-select,
+        #hourly-employee-select {
+            background-color: rgba(30, 41, 59, 0.8) !important;
+            color: #ffffff !important;
+        }
+
+        select.form-select option,
+        #config-employee-select option,
+        #calc-employee-select option,
+        #hourly-employee-select option {
+            background-color: #1e293b !important;
+            color: #ffffff !important;
+            padding: 8px 12px !important;
+            font-size: 1rem !important;
+        }
+
+        select.form-select option:hover,
+        #config-employee-select option:hover,
+        #calc-employee-select option:hover,
+        #hourly-employee-select option:hover {
+            background-color: #334155 !important;
+        }
+
+        select.form-select option:checked,
+        #config-employee-select option:checked,
+        #calc-employee-select option:checked,
+        #hourly-employee-select option:checked {
+            background-color: #10b981 !important;
+            font-weight: 600 !important;
+        }
+
+        @supports (-ms-ime-align: auto) {
+            select option {
+                background-color: #1e293b;
+                color: #ffffff;
+            }
+        }
+
+        /* ⭐⭐⭐ 在這裡加入強化版 CSS ⭐⭐⭐ */
+        select, 
+        select option {
+            background-color: #1e293b !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .month-selector {
+                flex-direction: column;
+            }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 標題區 -->
+        <div class="header">
+            <div class="header-left">
+                <div class="icon-box">
+                    <svg class="salary-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="12" y="8" width="40" height="48" rx="4" fill="white" opacity="0.95"/>
+                        <line x1="18" y1="16" x2="46" y2="16" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="18" y1="22" x2="46" y2="22" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="18" y1="28" x2="38" y2="28" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="32" cy="40" r="10" fill="#10b981"/>
+                        <text x="32" y="46" font-size="14" font-weight="bold" fill="white" text-anchor="middle">$</text>
+                    </svg>
+                </div>
+                <div class="header-title">
+                    <h1 data-i18n="SALARY_SYSTEM_TITLE">薪資管理系統</h1>
+                    <p data-i18n="SALARY_SYSTEM_DESC">完整薪資管理解決方案（含津貼與扣款）</p>
+                </div>
+            </div>
+            <button class="back-btn" onclick="goBack()" data-i18n="BTN_BACK">← 返回</button>
+        </div>
+
+        <!-- 權限提示 -->
+        <div id="permission-info" class="permission-badge" style="display: none;">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+            <span id="permission-text">載入中...</span>
+        </div>
+
+        <!-- Tab 導航 -->
+        <div class="tab-nav" id="tab-navigation">
+            <button class="tab-btn active" onclick="showTab('employee-salary')" data-role="all" data-i18n="SALARY_TAB_EMPLOYEE">員工薪酬</button>
+            <button class="tab-btn" onclick="showTab('salary-setting')" data-role="admin" data-i18n="SALARY_TAB_SETTING">薪資設定</button>
+            <button class="tab-btn" onclick="showTab('monthly-calc')" data-role="admin" data-i18n="SALARY_TAB_MONTHLY">月薪計算</button>
+            <button class="tab-btn" onclick="showTab('hourly-calc')" data-role="admin" data-i18n="SALARY_TAB_HOURLY">時薪計算</button>
+            <button class="tab-btn" onclick="showTab('salary-list')" data-role="admin" data-i18n="SALARY_TAB_LIST">薪資列表</button>
+        </div>
+
+        <!-- Tab 1: 員工薪酬 -->
+        <div id="employee-salary" class="tab-content active">
+            <div id="employee-salary-section">
+                <!-- 月份選擇器 -->
+                <div class="month-selector">
+                    <label data-i18n="SALARY_QUERY_MONTH">📅 查詢月份：</label>
+                    <input type="month" id="employee-salary-month" class="form-input">
+                    <button onclick="loadEmployeeSalaryByMonth()" data-i18n="BTN_QUERY">🔍 查詢</button>
+                </div>
+
+                <div class="feature-box">
+                    <div class="feature-title" data-i18n="SALARY_MY_DETAIL">我的薪資明細</div>
+                    
+                    <div id="current-salary-loading" class="loading" style="display: none;">
+                        <div class="loading-spinner"></div>
+                        <p data-i18n="LOADING">載入中...</p>
+                    </div>
+                    
+                    <div id="current-salary-empty" class="empty-state" style="display: none;">
+                        <div class="empty-state-icon">📄</div>
+                        <div class="empty-state-title" data-i18n="SALARY_NO_RECORD">尚無薪資記錄</div>
+                        <div class="empty-state-text">
+                            <p>此月份還沒有薪資資料</p>
+                            <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+                                💡 提示：薪資需要由管理員先設定和計算<br>
+                                請聯繫您的主管或人資部門
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div id="current-salary-content" style="display: none;">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div class="info-card" style="background: rgba(34, 197, 94, 0.1);">
+                                <div class="info-label" data-i18n="SALARY_GROSS">應發總額</div>
+                                <div id="gross-salary" class="info-value" style="color: #22c55e;">$0</div>
+                            </div>
+                            <div class="info-card" style="background: rgba(239, 68, 68, 0.1);">
+                                <div class="info-label" data-i18n="SALARY_DEDUCTIONS">扣款總額</div>
+                                <div id="total-deductions" class="info-value" style="color: #ef4444;">$0</div>
+                            </div>
+                            <div class="info-card" style="background: rgba(168, 85, 247, 0.1);">
+                                <div class="info-label" data-i18n="SALARY_NET">實發金額</div>
+                                <div id="net-salary" class="info-value" style="color: #a855f7;">$0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <!-- 👈 應發項目 -->
+                            <div class="feature-box">
+                                <h4 class="font-semibold mb-3 text-green-400" data-i18n="SALARY_EARNINGS_TITLE">應發項目</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span data-i18n="SALARY_BASE">基本薪資</span>
+                                        <span id="detail-base-salary" class="font-mono">$0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span data-i18n="SALARY_POSITION_ALLOWANCE">職務加給</span>
+                                        <span id="detail-position-allowance" class="font-mono">$0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span data-i18n="SALARY_MEAL_ALLOWANCE">伙食費</span>
+                                        <span id="detail-meal-allowance" class="font-mono">$0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span data-i18n="SALARY_TRANSPORT_ALLOWANCE">交通補助</span>
+                                        <span id="detail-transport-allowance" class="font-mono">$0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span data-i18n="SALARY_ATTENDANCE_BONUS">全勤獎金</span>
+                                        <span id="detail-attendance-bonus" class="font-mono">$0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span data-i18n="SALARY_PERFORMANCE_BONUS">業績獎金</span>
+                                        <span id="detail-performance-bonus" class="font-mono">$0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span data-i18n="SALARY_WEEKDAY_OT">平日加班費</span>
+                                        <span id="detail-weekday-overtime" class="font-mono">$0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span data-i18n="SALARY_RESTDAY_OT">休息日加班費</span>
+                                        <span id="detail-restday-overtime" class="font-mono">$0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span data-i18n="SALARY_HOLIDAY_OT">國定假日加班費</span>
+                                        <span id="detail-holiday-overtime" class="font-mono">$0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 👈 扣款項目（只保留一個） -->
+                            <div class="feature-box">
+                                <h4 class="font-semibold mb-3 text-red-400" data-i18n="SALARY_DEDUCTIONS_TITLE">扣款項目</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span data-i18n="SALARY_LABOR_INS">勞保費</span>
+                                        <span id="detail-labor-fee" class="font-mono">$0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span data-i18n="SALARY_HEALTH_INS">健保費</span>
+                                        <span id="detail-health-fee" class="font-mono">$0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span data-i18n="SALARY_EMPLOYMENT_INS">就業保險費</span>
+                                        <span id="detail-employment-fee" class="font-mono">$0</span>
+                                    </div>
+                                    <!-- <div class="flex justify-between">
+                                        <span data-i18n="SALARY_PENSION_RATE">勞退自提率 (%)</span>
+                                        <span id="detail-pension-rate" class="font-mono">0%</span>
+                                    </div> -->
+                                    <div class="flex justify-between">
+                                        <span data-i18n="SALARY_PENSION">勞退自提金額</span>
+                                        <span id="detail-pension-self" class="font-mono">$0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span data-i18n="SALARY_TAX">所得稅</span>
+                                        <span id="detail-income-tax" class="font-mono">$0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span data-i18n="SALARY_LEAVE_DEDUCT">請假扣款</span>
+                                        <span id="detail-leave-deduction" class="font-mono">$0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span data-i18n="SALARY_OTHER_DEDUCT">其他扣款</span>
+                                        <span id="detail-other-deductions" class="font-mono">$0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-700">
+                            <h4 class="font-semibold mb-2" data-i18n="SALARY_BANK_INFO_TITLE">銀行資訊</h4>
+                            <div class="text-sm">
+                                <span data-i18n="SALARY_BANK_NAME_LABEL">銀行：</span>
+                                <span id="detail-bank-name" class="font-mono">--</span>
+                                <span data-i18n="SALARY_ACCOUNT_LABEL">帳號：</span>
+                                <span id="detail-bank-account" class="font-mono">--</span>
+                            </div>
+                        </div>
+
+                        <!-- ⭐⭐⭐ 出勤明細區塊（由 JS 動態產生內容） -->
+                        <div class="mt-6" id="attendance-details-section" style="display: none;">
+                            <!-- JavaScript 會在這裡動態插入工時統計和加班統計 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="feature-box">
+                    <div class="feature-title" data-i18n="SALARY_HISTORY_TITLE">薪資歷史記錄</div>
+                    
+                    <div id="salary-history-loading" class="loading" style="display: none;">
+                        <div class="loading-spinner"></div>
+                        <p>載入中...</p>
+                    </div>
+                    
+                    <div id="salary-history-empty" class="empty-state" style="display: none;">
+                        <div class="empty-state-icon">📋</div>
+                        <div class="empty-state-title" data-i18n="SALARY_NO_HISTORY">尚無歷史記錄</div>
+                    </div>
+                    
+                    <div id="salary-history-list" class="space-y-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: 薪資設定 -->
+        <div id="salary-setting" class="tab-content">
+            <div class="form-section">
+                <div class="feature-title" data-i18n="SALARY_SETTING_FORM_TITLE">員工薪資設定（完整版）</div>
+                <p data-i18n="SALARY_SETTING_DESC" style="color: #94a3b8; margin-bottom: 2rem;">
+                    設定基本薪資與所有津貼、扣款項目
+                </p>
+
+                <form id="salary-config-form">
+                    <!-- 基本資訊 -->
+                    <div class="feature-box">
+                        <h3 class="text-lg font-semibold mb-4" data-i18n="SALARY_BASIC_INFO">基本資訊</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label required" data-i18n="SALARY_EMPLOYEE_LABEL">員工</label>
+                                <select id="config-employee-select" class="form-select" required onchange="onEmployeeSelect()">
+                                    <option value="" data-i18n-option="SALARY_SELECT_EMPLOYEE">請選擇員工</option>
+                                    <!-- 動態載入員工列表 -->
+                                </select>
+                                <span class="form-hint" data-i18n="HINT_AUTO_FILL">選擇員工後會自動填入ID和姓名</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="SALARY_EMPLOYEE_ID_LABEL">員工ID</label>
+                                <input type="text" id="config-employee-id" class="form-input" placeholder="自動填入" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="SALARY_EMPLOYEE_NAME_LABEL">員工姓名</label>
+                                <input type="text" id="config-employee-name" class="form-input" placeholder="自動填入" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="SALARY_ID_NUMBER_LABEL">身分證字號</label>
+                                <input type="text" id="config-id-number" class="form-input" placeholder="選填" maxlength="10">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required" data-i18n="SALARY_EMPLOYEE_TYPE_LABEL">員工類型</label>
+                                <select id="config-employee-type" class="form-select" required>
+                                    <option value="" data-i18n-option="PLEASE_SELECT">請選擇</option>
+                                    <option value="正職" data-i18n-option="FULL_TIME">正職</option>
+                                    <option value="兼職" data-i18n-option="PART_TIME">兼職</option>
+                                    <option value="約聘" data-i18n-option="CONTRACT">約聘</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required" data-i18n="SALARY_TYPE_LABEL">薪資類型</label>
+                                <select id="config-salary-type" class="form-select" required>
+                                    <option value="">請選擇</option>
+                                    <option value="月薪">月薪</option>
+                                    <option value="時薪">時薪</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required" data-i18n="SALARY_BASE_LABEL">基本薪資</label>
+                                <input type="number" id="config-base-salary" class="form-input" 
+                                       placeholder="27,470" min="0" step="1" required>
+                                <span class="form-hint warning">⚠️ <strong>2025年基本工資</strong>: 月薪 28,590 元 | 時薪 190 元</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="section-divider">
+
+                    <!-- ⭐ 固定津貼項目 -->
+                    <div class="feature-box">
+                        <h3 class="text-lg font-semibold mb-2 text-green-400" data-i18n="SALARY_ALLOWANCE_TITLE">💰 固定津貼與補助</h3>
+
+                        <p class="text-sm text-gray-400 mb-4" data-i18n="ALLOWANCE_DESC">
+                            每月固定發放的津貼項目（會計入應發總額）
+                        </p>
+                        
+                        <div class="form-grid">
+                            <!-- 職務加給 -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="SALARY_POSITION_ALLOWANCE_LABEL">職務加給</label>
+                                <input type="number" id="config-position-allowance" class="form-input" 
+                                    value="0" min="0" step="1" placeholder="0">
+                                <span class="form-hint" data-i18n="HINT_POSITION_ALLOWANCE">依職務等級固定發放</span>
+                            </div>
+                            
+                            <!-- 伙食費 -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="SALARY_MEAL_ALLOWANCE_LABEL">伙食費</label>
+                                <input type="number" id="config-meal-allowance" class="form-input" 
+                                    value="0" min="0" step="1" placeholder="0">
+                                <span class="form-hint" data-i18n="HINT_MEAL_ALLOWANCE">每月伙食補助（常見: 2,400元）</span>
+                            </div>
+                            
+                            <!-- 交通補助 -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="SALARY_TRANSPORT_ALLOWANCE_LABEL">交通補助</label>
+                                <input type="number" id="config-transport-allowance" class="form-input" 
+                                    value="0" min="0" step="1" placeholder="0">
+                                <span class="form-hint" data-i18n="HINT_TRANSPORT_ALLOWANCE">每月交通津貼或油錢補助</span>
+                            </div>
+                            
+                            <!-- 全勤獎金 -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="SALARY_ATTENDANCE_BONUS_LABEL">全勤獎金</label>
+                                <input type="number" id="config-attendance-bonus" class="form-input" 
+                                    value="0" min="0" step="1" placeholder="0">
+                                <span class="form-hint" data-i18n="HINT_ATTENDANCE_BONUS">未請假可領取（系統自動判斷）</span>
+                            </div>
+                            
+                            <!-- 業績獎金 -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="SALARY_PERFORMANCE_BONUS_LABEL">業績獎金</label>
+                                <input type="number" id="config-performance-bonus" class="form-input" 
+                                    value="0" min="0" step="1" placeholder="0">
+                                <span class="form-hint" data-i18n="HINT_PERFORMANCE_BONUS">依業績發放</span>
+                            </div>
+                            
+                            <!-- 其他津貼 -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="SALARY_OTHER_ALLOWANCES_LABEL">其他津貼</label>
+                                <input type="number" id="config-other-allowances" class="form-input" 
+                                    value="0" min="0" step="1" placeholder="0">
+                                <span class="form-hint" data-i18n="HINT_OTHER_ALLOWANCES">其他固定津貼項目</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="section-divider">
+
+                    <!-- 扣款項目 -->
+                    <div class="feature-box">
+                        <h3 class="text-lg font-semibold mb-2">
+                            <span data-i18n="SALARY_LEGAL_DEDUCTIONS_TITLE">法定扣款項目</span>
+                            <!-- ❌ 移除自動計算標記 -->
+                        </h3>
+                        <p class="text-sm text-gray-400 mb-4" data-i18n="LEGAL_DEDUCTIONS_DESC">
+                            請手動輸入或點擊「計算扣款」按鈕自動計算以下項目
+                        </p>
+                        
+                        <!-- ⭐ 新增：手動計算按鈕 -->
+                        <button type="button" class="mb-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors" onclick="manualCalculateDeductions()">
+                            計算扣款
+                        </button>
+                        
+                        <div class="form-grid">
+                            <!-- 勞保費（改為可輸入） -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span data-i18n="SALARY_LABOR_INS_LABEL">勞保費</span>
+                                </label>
+                                <input type="number" id="config-labor-fee" class="form-input" 
+                                       value="0" min="0" step="1" placeholder="0">
+                                <span class="form-hint" data-i18n="HINT_LABOR_INS">個人負擔20%</span>
+                            </div>
+                            
+                            <!-- 健保費（改為可輸入） -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span data-i18n="SALARY_HEALTH_INS_LABEL">健保費</span>
+                                </label>
+                                <input type="number" id="config-health-fee" class="form-input" 
+                                       value="0" min="0" step="1" placeholder="0">
+                                <span class="form-hint" data-i18n="HINT_HEALTH_INS">個人負擔30%</span>
+                            </div>
+                            
+                            <!-- 就業保險費（改為可輸入） -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span data-i18n="SALARY_EMPLOYMENT_INS_LABEL">就業保險費</span>
+                                </label>
+                                <input type="number" id="config-employment-fee" class="form-input" 
+                                       value="0" min="0" step="1" placeholder="0">
+                                <span class="form-hint" data-i18n="HINT_EMPLOYMENT_INS">費率1%</span>
+                            </div>
+                            
+                            <!-- 勞退自提率（可輸入） -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="SALARY_PENSION_RATE_LABEL">勞退自提率 (%)</label>
+                                <input type="number" id="config-pension-rate" class="form-input" 
+                                       value="0" min="0" max="6" step="1" placeholder="0">
+                                <span class="form-hint" data-i18n="HINT_PENSION_RATE">可選擇 0% ~ 6%</span>
+                            </div>
+                            
+                            <!-- 勞退自提金額（改為可輸入） -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span data-i18n="SALARY_PENSION_SELF_LABEL">勞退自提金額</span>
+                                </label>
+                                <input type="number" id="config-pension-self" class="form-input" 
+                                       value="0" min="0" step="1" placeholder="0">
+                            </div>
+                            
+                            <!-- 所得稅（改為可輸入） -->
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <span data-i18n="SALARY_TAX_LABEL">所得稅</span>
+                                </label>
+                                <input type="number" id="config-income-tax" class="form-input" 
+                                       value="0" min="0" step="1" placeholder="0">
+                            </div>
+                        </div>
+                    
+
+                        <hr class="section-divider">
+
+                        <!-- ⭐ 其他扣款 -->
+                        <div class="section-label" data-i18n="OTHER_DEDUCTIONS_TITLE">
+                            ⚠️ 其他扣款項目
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="SALARY_WELFARE_FEE_LABEL">福利金</label>
+                            <input type="number" id="config-welfare-fee" class="form-input" 
+                                   value="0" min="0" step="1" placeholder="0">
+                            <span class="form-hint" data-i18n="HINT_WELFARE_FEE">員工福利委員會福利金</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="SALARY_DORMITORY_FEE_LABEL">宿舍費用</label>
+                            <input type="number" id="config-dormitory-fee" class="form-input" 
+                                   value="0" min="0" step="1" placeholder="0">
+                            <span class="form-hint" data-i18n="HINT_DORMITORY_FEE">若公司提供宿舍</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="SALARY_GROUP_INSURANCE_LABEL">團保費用</label>
+                            <input type="number" id="config-group-insurance" class="form-input" 
+                                   value="0" min="0" step="1" placeholder="0">
+                            <span class="form-hint" data-i18n="HINT_GROUP_INSURANCE">團體保險個人分攤</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" data-i18n="SALARY_OTHER_DEDUCTIONS_LABEL">其他扣款</label>
+                            <input type="number" id="config-other-deductions" class="form-input" 
+                                   value="0" min="0" step="1" placeholder="0">
+                            <span class="form-hint" data-i18n="HINT_OTHER_DEDUCTIONS">其他固定扣款項目</span>
+                        </div>
+                    </div>
+
+                    <!-- 薪資試算預覽 -->
+                    <div class="salary-preview">
+                        <div class="salary-preview-title" data-i18n="SALARY_PREVIEW_TITLE">💡 薪資試算預覽</div>
+                        
+                        <div class="salary-preview-grid">
+                            <div>
+                                <div class="salary-preview-item">
+                                    <span data-i18n="PREVIEW_BASE_SALARY">基本薪資:</span>
+                                    <span id="preview-base-salary" class="font-mono">NT$ 0</span>
+                                </div>
+                                <div class="salary-preview-item">
+                                    <span data-i18n="PREVIEW_ALLOWANCES_TOTAL">固定津貼小計:</span>
+                                    <span id="preview-allowances-total" class="font-mono text-green-400">NT$ 0</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="salary-preview-item">
+                                    <span data-i18n="PREVIEW_INSURED_SALARY">投保薪資級距:</span>
+                                    <span id="preview-insured-salary" class="font-mono">NT$ 0</span>
+                                </div>
+                                <div class="salary-preview-item">
+                                    <span data-i18n="PREVIEW_HOURLY_RATE">平日時薪:</span>
+                                    <span id="preview-hourly-rate" class="font-mono">NT$ 0</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="salary-preview-item">
+                                    <span data-i18n="PREVIEW_LEGAL_DEDUCTIONS">法定扣款:</span>
+                                    <span id="preview-legal-deductions" class="font-mono text-red-400">NT$ 0</span>
+                                </div>
+                                <div class="salary-preview-item">
+                                    <span data-i18n="PREVIEW_OTHER_DEDUCTIONS">其他扣款:</span>
+                                    <span id="preview-other-deductions-total" class="font-mono text-red-400">NT$ 0</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="salary-preview-total">
+                            <span data-i18n="PREVIEW_NET_SALARY">預估實發薪資:</span> 
+                            <span id="preview-net-salary">NT$ 0</span>
+                        </div>
+                    </div>
+
+                    <hr class="section-divider">
+
+                    <!-- 銀行帳號資訊 -->
+                    <div style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 1.5rem;">
+                        <div class="feature-title" data-i18n="BANK_INFO_TITLE">🏦 銀行帳號資訊</div>
+                        <div class="form-grid">
+                            <!-- 銀行代碼 -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="BANK_CODE_LABEL">銀行代碼</label>
+                                <select id="config-bank-code" class="form-select">
+                                    <option value="" data-i18n-option="SELECT_BANK">-- 請選擇銀行 --</option>
+                                    
+                                    <!-- 公股銀行 -->
+                                    <option value="004">004 - 臺灣銀行</option>
+                                    <option value="005">005 - 臺灣土地銀行</option>
+                                    <option value="006">006 - 合作金庫商業銀行</option>
+                                    <option value="007">007 - 第一商業銀行</option>
+                                    <option value="008">008 - 華南商業銀行</option>
+                                    <option value="009">009 - 彰化商業銀行</option>
+                                    <option value="011">011 - 上海商業儲蓄銀行</option>
+                                    <option value="012">012 - 台北富邦商業銀行</option>
+                                    <option value="013">013 - 國泰世華商業銀行</option>
+                                    <option value="016">016 - 高雄銀行</option>
+                                    <option value="017">017 - 兆豐國際商業銀行</option>
+                                    <option value="050">050 - 臺灣中小企業銀行</option>
+                                    
+                                    <!-- 民營銀行 -->
+                                    <option value="103">103 - 臺灣新光商業銀行</option>
+                                    <option value="108">108 - 陽信商業銀行</option>
+                                    <option value="118">118 - 板信商業銀行</option>
+                                    <option value="147">147 - 三信商業銀行</option>
+                                    <option value="803">803 - 聯邦商業銀行</option>
+                                    <option value="805">805 - 遠東國際商業銀行</option>
+                                    <option value="806">806 - 元大商業銀行</option>
+                                    <option value="807">807 - 永豐商業銀行</option>
+                                    <option value="808">808 - 玉山商業銀行</option>
+                                    <option value="809">809 - 凱基商業銀行</option>
+                                    <option value="810">810 - 星展（台灣）商業銀行</option>
+                                    <option value="812">812 - 台新國際商業銀行</option>
+                                    <option value="816">816 - 安泰商業銀行</option>
+                                    <option value="822">822 - 中國信託商業銀行</option>
+                                    <option value="826">826 - 樂天國際商業銀行</option>
+                                    
+                                    <!-- 外商銀行 -->
+                                    <option value="052">052 - 渣打國際商業銀行</option>
+                                    <option value="081">081 - 匯豐（台灣）商業銀行</option>
+                                    <option value="101">101 - 瑞興商業銀行</option>
+                                    <option value="102">102 - 華泰商業銀行</option>
+                                    <option value="815">815 - 日盛國際商業銀行</option>
+                                    <option value="824">824 - 連線商業銀行</option>
+                                    
+                                    <!-- 郵局 -->
+                                    <option value="700">700 - 中華郵政</option>
+                                </select>
+                            </div>
+                            
+                            <!-- 銀行帳號 -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="BANK_ACCOUNT_LABEL">銀行帳號</label>
+                                <input type="text" id="config-bank-account" class="form-input" 
+                                    data-i18n="BANK_ACCOUNT_PLACEHOLDER" placeholder="請輸入銀行帳號">
+                            </div>
+                            
+                            <!-- 入職日期 -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="HIRE_DATE_LABEL">入職日期</label>
+                                <input type="date" id="config-hire-date" class="form-input">
+                            </div>
+                            
+                            <!-- 發薪日 -->
+                            <div class="form-group">
+                                <label class="form-label" data-i18n="PAYMENT_DAY_LABEL">發薪日</label>
+                                <input type="number" id="config-payment-day" class="form-input" 
+                                    value="5" min="1" max="31">
+                                <span class="form-hint" data-i18n="HINT_PAYMENT_DAY">每月發薪日期 (1-31)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 1.5rem;">
+                        <label class="form-label" data-i18n="NOTE_LABEL">備註</label>
+                        <textarea id="config-note" class="form-textarea" rows="3" 
+                                  data-i18n="NOTE_PLACEHOLDER" placeholder="選填，可記錄特殊說明事項"></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn" data-i18n="BTN_SAVE_SALARY_SETTING">💾 儲存薪資設定</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tab 3: 月薪計算 -->
+        <div id="monthly-calc" class="tab-content">
+            <div class="form-section">
+                <div class="feature-title" data-i18n="MONTHLY_CALC_TITLE">月薪計算</div>
+                <p style="color: #94a3b8; margin-bottom: 2rem;" data-i18n="MONTHLY_CALC_DESC">
+                    自動計算員工月薪資，包含加班費、津貼、扣款項目
+                </p>
+
+                <div class="form-grid" style="max-width: 800px; margin-bottom: 1.5rem;">
+                    <div class="form-group">
+                        <label class="form-label required" data-i18n="CALC_EMPLOYEE_LABEL">員工</label>
+                        <select id="calc-employee-select" class="form-select" required onchange="onCalcEmployeeSelect()">
+                            <option value="" data-i18n-option="SALARY_SELECT_EMPLOYEE">請選擇員工</option>
+                        </select>
+                        <input type="hidden" id="calc-employee-id">
+                    </div>
+                
+                    <div class="form-group">
+                        <label class="form-label required" data-i18n="CALC_YEAR_MONTH_LABEL">計算年月</label>
+                        <input type="month" id="calc-year-month" class="form-input">
+                    </div>
+                </div>
+                
+                <button id="calculate-salary-btn" class="submit-btn" style="max-width: 300px;" data-i18n="BTN_START_CALC">
+                    🧮 開始計算
+                </button>
+
+                <div id="salary-calculation-result" style="display: none; margin-top: 2rem;"></div>
+            </div>
+        </div>
+
+        <!-- Tab 4: 時薪計算 -->
+        <div id="hourly-calc" class="tab-content">
+            <div class="form-section">
+                <div class="feature-title" data-i18n="HOURLY_CALC_TITLE">時薪計算</div>
+                <p style="color: #94a3b8; margin-bottom: 2rem;" data-i18n="HOURLY_CALC_DESC">
+                    自動計算時薪人員的薪資，根據出勤記錄自動統計工作時數
+                </p>
+
+                <div class="form-grid" style="max-width: 800px; margin-bottom: 1.5rem;">
+                    <div class="form-group">
+                        <label class="form-label required" data-i18n="CALC_EMPLOYEE_LABEL">員工</label>
+                        <select id="hourly-employee-select" class="form-select" required onchange="onHourlyEmployeeSelect()">
+                            <option value="" data-i18n-option="SALARY_SELECT_EMPLOYEE">請選擇員工</option>
+                        </select>
+                        <input type="hidden" id="hourly-employee-id">
+                    </div>
+                
+                    <div class="form-group">
+                        <label class="form-label required" data-i18n="CALC_YEAR_MONTH_LABEL">計算年月</label>
+                        <input type="month" id="hourly-year-month" class="form-input">
+                    </div>
+                </div>
+                
+                <button id="calculate-hourly-btn" class="submit-btn" style="max-width: 300px;" data-i18n="BTN_START_CALC">
+                    🧮 開始計算
+                </button>
+
+                <div id="hourly-calculation-result" style="display: none; margin-top: 2rem;"></div>
+            </div>
+        </div>
+
+        <!-- 在 Tab 5: 薪資列表 的 feature-title 下方添加 -->
+        <div id="salary-list" class="tab-content">
+            <div class="form-section">
+                <div class="feature-title" data-i18n="SALARY_LIST_TITLE">薪資列表</div>
+                
+                <!-- ⭐ 新增：匯出工具列（只有管理員可見） -->
+                <div id="admin-export-toolbar" class="export-toolbar" style="display: none; margin-bottom: 2rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px;">
+                    <div style="flex: 1;">
+                        <h4 style="color: #10b981; font-weight: 600; margin-bottom: 0.5rem;">管理員功能</h4>
+                        <p style="color: #94a3b8; font-size: 0.875rem;">匯出當月所有員工的薪資總表（Excel格式）</p>
+                    </div>
+                    <button class="export-btn" onclick="exportAllSalaryExcel()">
+                        匯出薪資總表
+                    </button>
+                </div>
+                
+                <p style="color: #94a3b8; margin-bottom: 2rem;" data-i18n="SALARY_LIST_DESC">
+                    瀏覽所有員工的薪資記錄
+                </p>
+
+                <div class="form-group" style="max-width: 300px; margin-bottom: 1.5rem;">
+                    <label class="form-label" data-i18n="FILTER_YEAR_MONTH_LABEL">查詢年月</label>
+                    <input type="month" id="filter-year-month-list" class="form-input">
+                </div>
+
+                <button class="submit-btn" style="max-width: 300px;" onclick="loadAllEmployeeSalaryFromList()" data-i18n="BTN_LOAD_SALARY_LIST">
+                    📋 載入薪資列表
+                </button>
+
+                <div id="all-salary-loading-list" class="loading" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p data-i18n="LOADING">載入中...</p>
+                </div>
+
+                <div id="all-salary-list-content" class="space-y-3" style="margin-top: 2rem;"></div>
+            </div>
+        </div>
+
+        <style>
+        .export-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+        }
+
+        .export-btn {
+            padding: 0.875rem 2rem;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .export-btn:active {
+            transform: translateY(0);
+        }
+
+        .export-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 匯出進度提示 */
+        .export-progress-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .export-progress {
+            background: rgba(15, 23, 42, 0.95);
+            padding: 2.5rem 3rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .export-progress-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(16, 185, 129, 0.2);
+            border-top-color: #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+
+        .export-progress-text {
+            color: #fff;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        </style>
+    </div>
+
+    <div id="notification" class="notification">
+        <p id="notification-message"></p>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+    <script src="salary.js"></script>
+    
+    <script>
+        let currentUserRole = null;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('✅ 薪資管理頁面載入完成（完整版 v2.0）');
+            
+            await checkUserPermission();
+            await loadEmployeeList();
+            const now = new Date();
+            const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            
+            const employeeSalaryMonth = document.getElementById('employee-salary-month');
+            if (employeeSalaryMonth) {
+                employeeSalaryMonth.value = currentMonth;
+            }
+            
+            const calcYearMonth = document.getElementById('calc-year-month');
+            if (calcYearMonth) calcYearMonth.value = currentMonth;
+            
+            const hourlyYearMonth = document.getElementById('hourly-year-month');
+            if (hourlyYearMonth) hourlyYearMonth.value = currentMonth;
+            
+            const filterYearMonthList = document.getElementById('filter-year-month-list');
+            if (filterYearMonthList) filterYearMonthList.value = currentMonth;
+            
+            if (typeof initSalaryTab === 'function') {
+                initSalaryTab();
+            }
+            
+            bindAutoCalculation();
+            bindHourlyCalculation();
+        });
+
+        async function checkUserPermission() {
+            try {
+                const res = await callApifetch("checkSession");
+                
+                if (res.ok && res.user) {
+                    const isAdmin = res.user.dept === "管理員";
+                    currentUserRole = isAdmin ? 'admin' : 'employee';
+                    
+                    const permissionInfo = document.getElementById('permission-info');
+                    const permissionText = document.getElementById('permission-text');
+                    
+                    if (permissionInfo && permissionText) {
+                        permissionInfo.style.display = 'flex';
+                        permissionText.textContent = isAdmin 
+                            ? `👤 管理員模式 - ${res.user.name || res.user.userId}` 
+                            : `👤 員工模式 - ${res.user.name || res.user.userId}`;
+                    }
+                    
+                    // 隱藏管理員專用的 Tab
+                    const tabs = document.querySelectorAll('[data-role="admin"]');
+                    tabs.forEach(tab => {
+                        if (!isAdmin) {
+                            tab.style.display = 'none';
+                        }
+                    });
+                    
+                    // ⭐ 顯示/隱藏匯出工具列
+                    const exportToolbar = document.getElementById('admin-export-toolbar');
+                    if (exportToolbar) {
+                        exportToolbar.style.display = isAdmin ? 'flex' : 'none';
+                    }
+                    
+                    console.log(`✅ 使用者角色: ${currentUserRole}`);
+                }
+            } catch (error) {
+                console.error('檢查權限失敗:', error);
+            }
+        }
+
+        async function loadEmployeeSalaryByMonth() {
+            const monthInput = document.getElementById('employee-salary-month');
+            const yearMonth = monthInput ? monthInput.value : '';
+            
+            if (!yearMonth) {
+                showNotification(t('SALARY_SELECT_QUERY_MONTH'), 'error');
+                return;
+            }
+            
+            const loadingEl = document.getElementById('current-salary-loading');
+            const emptyEl = document.getElementById('current-salary-empty');
+            const contentEl = document.getElementById('current-salary-content');
+            
+            if (!loadingEl || !emptyEl || !contentEl) return;
+            
+            try {
+                loadingEl.style.display = 'block';
+                emptyEl.style.display = 'none';
+                contentEl.style.display = 'none';
+                
+                const res = await callApifetch(`getMySalary&yearMonth=${yearMonth}`);
+                
+                loadingEl.style.display = 'none';
+                
+                if (res.ok && res.data) {
+                    displayEmployeeSalary(res.data);
+                    contentEl.style.display = 'block';
+                } else {
+                    emptyEl.style.display = 'block';
+                }
+                
+            } catch (error) {
+                console.error('載入薪資失敗:', error);
+                loadingEl.style.display = 'none';
+                emptyEl.style.display = 'block';
+            }
+        }
+
+        function displayEmployeeSalary(data) {
+            const safeSet = (id, value) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = value;
+            };
+            
+            safeSet('gross-salary', formatCurrency(data['應發總額']));
+            safeSet('net-salary', formatCurrency(data['實發金額']));
+            
+            const deductions = 
+                (parseFloat(data['勞保費']) || 0) + 
+                (parseFloat(data['健保費']) || 0) + 
+                (parseFloat(data['就業保險費']) || 0) + 
+                (parseFloat(data['勞退自提']) || 0) + 
+                (parseFloat(data['所得稅']) || 0) +
+                (parseFloat(data['請假扣款']) || 0) +
+                (parseFloat(data['福利金']) || 0) +
+                (parseFloat(data['宿舍費用']) || 0) +
+                (parseFloat(data['團保費用']) || 0) +
+                (parseFloat(data['其他扣款']) || 0);
+            
+            safeSet('total-deductions', formatCurrency(deductions));
+            
+            // 應發項目
+            safeSet('detail-base-salary', formatCurrency(data['基本薪資']));
+            safeSet('detail-position-allowance', formatCurrency(data['職務加給'] || 0));
+            safeSet('detail-meal-allowance', formatCurrency(data['伙食費'] || 0));
+            safeSet('detail-transport-allowance', formatCurrency(data['交通補助'] || 0));
+            safeSet('detail-attendance-bonus', formatCurrency(data['全勤獎金'] || 0));
+            safeSet('detail-performance-bonus', formatCurrency(data['業績獎金'] || 0));
+            safeSet('detail-weekday-overtime', formatCurrency(data['平日加班費']));
+            safeSet('detail-restday-overtime', formatCurrency(data['休息日加班費']));
+            safeSet('detail-holiday-overtime', formatCurrency(data['國定假日加班費']));
+            
+            // 扣款項目
+            safeSet('detail-labor-fee', formatCurrency(data['勞保費']));
+            safeSet('detail-health-fee', formatCurrency(data['健保費']));
+            safeSet('detail-employment-fee', formatCurrency(data['就業保險費']));
+            
+            // ⭐ 勞退自提率：從後端資料取得
+            const pensionRate = parseFloat(data['勞退自提率']) || 0;
+            safeSet('detail-pension-rate', `${pensionRate}%`);
+            
+            safeSet('detail-pension-self', formatCurrency(data['勞退自提']));
+            safeSet('detail-income-tax', formatCurrency(data['所得稅']));
+            safeSet('detail-leave-deduction', formatCurrency(data['請假扣款']));
+            
+            const otherDeductions = 
+                (parseFloat(data['福利金']) || 0) +
+                (parseFloat(data['宿舍費用']) || 0) +
+                (parseFloat(data['團保費用']) || 0) +
+                (parseFloat(data['其他扣款']) || 0);
+            safeSet('detail-other-deductions', formatCurrency(otherDeductions));
+            
+            // 銀行資訊
+            const bankCode = data['銀行代碼'];
+            const bankAccount = data['銀行帳號'];
+            
+            safeSet('detail-bank-name', getBankName(bankCode));
+            safeSet('detail-bank-account', bankAccount || '--');
+        }
+
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            const selectedTab = document.getElementById(tabId);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+
+            event.target.classList.add('active');
+        }
+        
+        function goBack() {
+            window.history.back();
+        }
+
+        function bindAutoCalculation() {
+            const inputs = [
+                'config-base-salary',
+                'config-pension-rate',
+                'config-position-allowance',
+                'config-meal-allowance',
+                'config-transport-allowance',
+                'config-attendance-bonus',
+                'config-performance-bonus',
+                'config-other-allowances',
+                'config-welfare-fee',
+                'config-dormitory-fee',
+                'config-group-insurance',
+                'config-other-deductions'
+            ];
+            
+            inputs.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', autoCalculateDeductions);
+                }
+            });
+            
+            console.log('✅ 自動計算功能已綁定');
+        }
+
+        function autoCalculateDeductions() {
+            const baseSalary = parseFloat(document.getElementById('config-base-salary').value) || 0;
+            const pensionRate = parseFloat(document.getElementById('config-pension-rate').value) || 0;
+            
+            const positionAllowance = parseFloat(document.getElementById('config-position-allowance').value) || 0;
+            const mealAllowance = parseFloat(document.getElementById('config-meal-allowance').value) || 0;
+            const transportAllowance = parseFloat(document.getElementById('config-transport-allowance').value) || 0;
+            const attendanceBonus = parseFloat(document.getElementById('config-attendance-bonus').value) || 0;
+            const performanceBonus = parseFloat(document.getElementById('config-performance-bonus').value) || 0;
+            const otherAllowances = parseFloat(document.getElementById('config-other-allowances').value) || 0;
+            
+            const welfareFee = parseFloat(document.getElementById('config-welfare-fee').value) || 0;
+            const dormitoryFee = parseFloat(document.getElementById('config-dormitory-fee').value) || 0;
+            const groupInsurance = parseFloat(document.getElementById('config-group-insurance').value) || 0;
+            const otherDeductions = parseFloat(document.getElementById('config-other-deductions').value) || 0;
+            
+            if (baseSalary <= 0) {
+                setCalculatedValues(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                return;
+            }
+            
+            const allowancesTotal = positionAllowance + mealAllowance + transportAllowance + 
+                                   attendanceBonus + performanceBonus + otherAllowances;
+            
+            const insuredSalary = getInsuredSalary(baseSalary);
+            const laborFee = Math.round(insuredSalary * 0.115 * 0.2);
+            const healthFee = Math.round(insuredSalary * 0.0517 * 0.3);
+            const employmentFee = Math.round(insuredSalary * 0.01 * 0.2);
+            const pensionSelf = Math.round(insuredSalary * (pensionRate / 100));
+            
+            let incomeTax = 0;
+            if (baseSalary > 34000) {
+                incomeTax = Math.round((baseSalary - 34000) * 0.05);
+            }
+            
+            const hourlyRate = Math.round(baseSalary / 30 / 8);
+            const legalDeductions = laborFee + healthFee + employmentFee + pensionSelf + incomeTax;
+            const otherDeductionsTotal = welfareFee + dormitoryFee + groupInsurance + otherDeductions;
+            const totalDeductions = legalDeductions + otherDeductionsTotal;
+            const netSalary = baseSalary + allowancesTotal - totalDeductions;
+            
+            setCalculatedValues(
+                laborFee, 
+                healthFee, 
+                employmentFee, 
+                pensionSelf, 
+                incomeTax,
+                insuredSalary,
+                hourlyRate,
+                legalDeductions,
+                otherDeductionsTotal,
+                netSalary,
+                baseSalary,
+                allowancesTotal
+            );
+        }
+
+        function getInsuredSalary(salary) {
+            const brackets = [
+                { min: 0, max: 26400, insured: 26400 },
+                { min: 26401, max: 27600, insured: 27600 },
+                { min: 27601, max: 28800, insured: 28800 },
+                { min: 28801, max: 30300, insured: 30300 },
+                { min: 30301, max: 31800, insured: 31800 },
+                { min: 31801, max: 33300, insured: 33300 },
+                { min: 33301, max: 34800, insured: 34800 },
+                { min: 34801, max: 36300, insured: 36300 },
+                { min: 36301, max: 38200, insured: 38200 },
+                { min: 38201, max: 40100, insured: 40100 },
+                { min: 40101, max: 42000, insured: 42000 },
+                { min: 42001, max: 43900, insured: 43900 },
+                { min: 43901, max: 45800, insured: 45800 },
+                { min: 45801, max: Infinity, insured: 45800 }
+            ];
+            
+            for (const bracket of brackets) {
+                if (salary >= bracket.min && salary <= bracket.max) {
+                    return bracket.insured;
+                }
+            }
+            
+            return 26400;
+        }
+
+        function setCalculatedValues(
+            laborFee, 
+            healthFee, 
+            employmentFee, 
+            pensionSelf, 
+            incomeTax,
+            insuredSalary = 0,
+            hourlyRate = 0,
+            legalDeductions = 0,
+            otherDeductionsTotal = 0,
+            netSalary = 0,
+            baseSalary = 0,
+            allowancesTotal = 0
+        ) {
+            const laborFeeEl = document.getElementById('config-labor-fee');
+            const healthFeeEl = document.getElementById('config-health-fee');
+            const employmentFeeEl = document.getElementById('config-employment-fee');
+            const pensionSelfEl = document.getElementById('config-pension-self');
+            const incomeTaxEl = document.getElementById('config-income-tax');
+            
+            if (laborFeeEl) laborFeeEl.value = laborFee;
+            if (healthFeeEl) healthFeeEl.value = healthFee;
+            if (employmentFeeEl) employmentFeeEl.value = employmentFee;
+            if (pensionSelfEl) pensionSelfEl.value = pensionSelf;
+            if (incomeTaxEl) incomeTaxEl.value = incomeTax;
+            
+            const insuredSalaryEl = document.getElementById('preview-insured-salary');
+            const hourlyRateEl = document.getElementById('preview-hourly-rate');
+            const legalDeductionsEl = document.getElementById('preview-legal-deductions');
+            const otherDeductionsTotalEl = document.getElementById('preview-other-deductions-total');
+            const netSalaryEl = document.getElementById('preview-net-salary');
+            const baseSalaryEl = document.getElementById('preview-base-salary');
+            const allowancesTotalEl = document.getElementById('preview-allowances-total');
+            
+            if (insuredSalaryEl) insuredSalaryEl.textContent = `NT$ ${insuredSalary.toLocaleString('zh-TW')}`;
+            if (hourlyRateEl) hourlyRateEl.textContent = `NT$ ${hourlyRate.toLocaleString('zh-TW')}`;
+            if (legalDeductionsEl) legalDeductionsEl.textContent = `NT$ ${legalDeductions.toLocaleString('zh-TW')}`;
+            if (otherDeductionsTotalEl) otherDeductionsTotalEl.textContent = `NT$ ${otherDeductionsTotal.toLocaleString('zh-TW')}`;
+            if (netSalaryEl) netSalaryEl.textContent = `NT$ ${netSalary.toLocaleString('zh-TW')}`;
+            if (baseSalaryEl) baseSalaryEl.textContent = `NT$ ${baseSalary.toLocaleString('zh-TW')}`;
+            if (allowancesTotalEl) allowancesTotalEl.textContent = `NT$ ${allowancesTotal.toLocaleString('zh-TW')}`;
+        }
+
+        // ⭐ 補充：時薪計算功能
+        function bindHourlyCalculation() {
+            const calculateBtn = document.getElementById('calculate-hourly-btn');
+            if (calculateBtn) {
+                calculateBtn.addEventListener('click', handleHourlyCalculation);
+            }
+        }
+
+        async function handleHourlyCalculation() {
+            const employeeIdEl = document.getElementById('hourly-employee-id');
+            const yearMonthEl = document.getElementById('hourly-year-month');
+            const resultEl = document.getElementById('hourly-calculation-result');
+            
+            if (!employeeIdEl || !yearMonthEl || !resultEl) {
+                console.error('找不到必要的元素');
+                return;
+            }
+            
+            const employeeId = employeeIdEl.value.trim();
+            const yearMonth = yearMonthEl.value;
+            
+            if (!employeeId || !yearMonth) {
+                showNotification('❌ 請選擇員工和計算年月', 'error');
+                return;
+            }
+            
+            try {
+                showNotification('🔄 正在計算薪資...', 'info');
+                
+                // ⭐ 改用跟月薪計算相同的 API
+                const res = await callApifetch(`calculateMonthlySalary&employeeId=${encodeURIComponent(employeeId)}&yearMonth=${encodeURIComponent(yearMonth)}`);
+                
+                if (res.ok && res.data) {
+                    displaySalaryCalculation(res.data, resultEl);
+                    resultEl.style.display = 'block';
+                    showNotification('✅ 薪資計算完成', 'success');
+                    
+                    if (confirm('是否儲存此薪資單？')) {
+                        await saveSalaryRecord(res.data);
+                    }
+                } else {
+                    showNotification('❌ 計算失敗: ' + (res.msg || '未知錯誤'), 'error');
+                }
+                
+            } catch (error) {
+                console.error('❌ 計算薪資失敗:', error);
+                showNotification('❌ 計算失敗', 'error');
+            }
+        }
+
+        function displayHourlyCalculation(data) {
+            const resultEl = document.getElementById('hourly-calculation-result');
+            if (!resultEl) return;
+            
+            resultEl.innerHTML = `
+                <div class="calculation-card">
+                    <h3 class="text-xl font-bold mb-4">
+                        時薪計算結果 - ${data.yearMonth}
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="info-card" style="background: rgba(34, 197, 94, 0.1);">
+                            <div class="info-label">應發總額</div>
+                            <div class="info-value" style="color: #22c55e;">$${data.grossSalary.toLocaleString('zh-TW')}</div>
+                        </div>
+                        <div class="info-card" style="background: rgba(239, 68, 68, 0.1);">
+                            <div class="info-label">扣款總額</div>
+                            <div class="info-value" style="color: #ef4444;">$${data.totalDeductions.toLocaleString('zh-TW')}</div>
+                        </div>
+                        <div class="info-card" style="background: rgba(168, 85, 247, 0.1);">
+                            <div class="info-label">實發金額</div>
+                            <div class="info-value" style="color: #a855f7;">$${data.netSalary.toLocaleString('zh-TW')}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="calculation-detail">
+                            <h4 class="font-semibold mb-3 text-green-400">應發項目</h4>
+                            <div class="calculation-row">
+                                <span>時薪</span>
+                                <span>NT$ ${data.hourlyRate}</span>
+                            </div>
+                            <div class="calculation-row">
+                                <span>工作時數</span>
+                                <span>${data.workHours} 小時</span>
+                            </div>
+                            <div class="calculation-row">
+                                <span>基本薪資</span>
+                                <span class="font-mono">$${data.basePay.toLocaleString('zh-TW')}</span>
+                            </div>
+                            <div class="calculation-row">
+                                <span>加班時數</span>
+                                <span>${data.overtimeHours} 小時 (×1.34)</span>
+                            </div>
+                            <div class="calculation-row">
+                                <span>加班費</span>
+                                <span class="font-mono">$${data.overtimePay.toLocaleString('zh-TW')}</span>
+                            </div>
+                            <div class="calculation-row total">
+                                <span>應發總額</span>
+                                <span>$${data.grossSalary.toLocaleString('zh-TW')}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="calculation-detail">
+                            <h4 class="font-semibold mb-3 text-red-400">扣款項目</h4>
+                            ${data.laborFee > 0 ? `
+                                <div class="calculation-row">
+                                    <span>勞保費</span>
+                                    <span class="font-mono">$${data.laborFee.toLocaleString('zh-TW')}</span>
+                                </div>
+                                <div class="calculation-row">
+                                    <span>健保費</span>
+                                    <span class="font-mono">$${data.healthFee.toLocaleString('zh-TW')}</span>
+                                </div>
+                                <div class="calculation-row">
+                                    <span>就業保險費</span>
+                                    <span class="font-mono">$${data.employmentFee.toLocaleString('zh-TW')}</span>
+                                </div>
+                            ` : `
+                                <div class="calculation-row">
+                                    <span>無強制保險</span>
+                                    <span class="text-gray-400">月薪未達基本工資</span>
+                                </div>
+                            `}
+                            <div class="calculation-row total">
+                                <span>扣款總額</span>
+                                <span>$${data.totalDeductions.toLocaleString('zh-TW')}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            resultEl.style.display = 'block';
+            showNotification(t('SALARY_HOURLY_CALC_SUCCESS'), 'success');
+        }
+
+        // ⭐ 補充：薪資列表功能
+        function loadAllEmployeeSalaryFromList() {
+            const yearMonthEl = document.getElementById('filter-year-month-list');
+            const loadingEl = document.getElementById('all-salary-loading-list');
+            const listEl = document.getElementById('all-salary-list-content');
+            
+            if (!yearMonthEl || !loadingEl || !listEl) {
+                console.warn('薪資列表元素未找到');
+                return;
+            }
+            
+            const yearMonth = yearMonthEl.value;
+            
+            if (!yearMonth) {
+                showNotification(t('SALARY_SELECT_YEAR_MONTH'), 'error');
+                return;
+            }
+            
+            loadingEl.style.display = 'block';
+            listEl.innerHTML = '';
+            
+            callApifetch(`getAllMonthlySalary&yearMonth=${yearMonth}`)
+                .then(res => {
+                    loadingEl.style.display = 'none';
+                    
+                    if (res.ok && res.data && res.data.length > 0) {
+                        res.data.forEach(salary => {
+                            const item = createAllSalaryItem(salary);
+                            listEl.appendChild(item);
+                        });
+                    } else {
+                        listEl.innerHTML = '<p class="text-center text-gray-400 py-8">尚無薪資記錄</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('載入薪資列表失敗:', error);
+                    loadingEl.style.display = 'none';
+                    listEl.innerHTML = '<p class="text-center text-red-400 py-8">載入失敗</p>';
+                });
+        }
+
+        function createAllSalaryItem(salary) {
+            const div = document.createElement('div');
+            div.className = 'feature-box flex justify-between items-center hover:bg-white/10 transition cursor-pointer';
+            
+            div.innerHTML = `
+                <div>
+                    <div class="font-semibold text-lg">
+                        ${salary['員工姓名'] || '--'} <span class="text-gray-400 text-sm">(${salary['員工ID'] || '--'})</span>
+                    </div>
+                    <div class="text-sm text-gray-400 mt-1">
+                        ${salary['年月'] || '--'} | ${salary['狀態'] || '--'}
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-2xl font-bold text-green-400">
+                        ${formatCurrency(salary['實發金額'])}
+                    </div>
+                    <div class="text-xs text-gray-400 mt-1">
+                        ${getBankName(salary['銀行代碼'])} ${salary['銀行帳號'] || '--'}
+                    </div>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        // ⭐ 補充：工具函數
+        function formatCurrency(amount) {
+            if (amount === null || amount === undefined || isNaN(amount)) return '$0';
+            return '$' + Number(amount).toLocaleString('zh-TW');
+        }
+
+        function getBankName(code) {
+            // ⭐ 自動補零到 3 位數
+            if (code) {
+                code = String(code).padStart(3, '0');
+            }
+            
+            const banks = {
+                // 公股銀行
+                "004": "臺灣銀行",
+                "005": "臺灣土地銀行",
+                "006": "合作金庫商業銀行",
+                "007": "第一商業銀行",
+                "008": "華南商業銀行",
+                "009": "彰化商業銀行",
+                "011": "上海商業儲蓄銀行",
+                "012": "台北富邦商業銀行",
+                "013": "國泰世華商業銀行",
+                "016": "高雄銀行",
+                "017": "兆豐國際商業銀行",
+                "050": "臺灣中小企業銀行",
+                
+                // 民營銀行
+                "103": "臺灣新光商業銀行",
+                "108": "陽信商業銀行",
+                "118": "板信商業銀行",
+                "147": "三信商業銀行",
+                "803": "聯邦商業銀行",
+                "805": "遠東國際商業銀行",
+                "806": "元大商業銀行",
+                "807": "永豐商業銀行",
+                "808": "玉山商業銀行",
+                "809": "凱基商業銀行",
+                "810": "星展（台灣）商業銀行",
+                "812": "台新國際商業銀行",
+                "816": "安泰商業銀行",
+                "822": "中國信託商業銀行",
+                "826": "樂天國際商業銀行",
+                
+                // 外商銀行
+                "052": "渣打國際商業銀行",
+                "081": "匯豐（台灣）商業銀行",
+                "101": "瑞興商業銀行",
+                "102": "華泰商業銀行",
+                "815": "日盛國際商業銀行",
+                "824": "連線商業銀行",
+                
+                // 郵局
+                "700": "中華郵政"
+            };
+            
+            // 如果代碼不存在，返回更詳細的資訊
+            if (!code || code === '') {
+                return "未設定銀行";
+            }
+            
+            return banks[code] || `未知銀行 (代碼: ${code})`;
+        }
+        
+        async function loadEmployeeList(retryCount = 0) {
+            try {
+                console.log(`📋 載入員工列表... (嘗試 ${retryCount + 1})`);
+                
+                const res = await callApifetch('getAllUsers');
+                
+                if (res.ok && res.users && res.users.length > 0) {
+                    // 所有需要員工下拉選單的元素ID
+                    const selectIds = [
+                        'config-employee-select',
+                        'calc-employee-select',
+                        'hourly-employee-select'
+                    ];
+                    
+                    let hasError = false;
+                    
+                    selectIds.forEach(selectId => {
+                        const selectEl = document.getElementById(selectId);
+                        if (!selectEl) {
+                            console.warn(`找不到 ${selectId}`);
+                            hasError = true;
+                            return;
+                        }
+                        
+                        // 清空並重建選項
+                        selectEl.innerHTML = '<option value="">請選擇員工</option>';
+                        
+                        res.users.forEach(user => {
+                            const option = document.createElement('option');
+                            option.value = JSON.stringify({
+                                userId: user.userId,
+                                name: user.name,
+                                email: user.email,
+                                dept: user.dept
+                            });
+                            option.textContent = `${user.name} (${user.dept || '未分配部門'})`;
+                            selectEl.appendChild(option);
+                        });
+                        
+                        // ⭐ 驗證選項是否正確添加
+                        console.log(`✅ ${selectId} 已添加 ${selectEl.options.length - 1} 位員工`);
+                    });
+                    
+                    // ⭐ 如果有錯誤且重試次數未超過3次，則重試
+                    if (hasError && retryCount < 3) {
+                        console.warn('⚠️ 部分元素未找到，500ms 後重試...');
+                        setTimeout(() => loadEmployeeList(retryCount + 1), 500);
+                        return;
+                    }
+                    
+                    console.log(`✅ 成功載入 ${res.users.length} 位員工到所有下拉選單`);
+                } else {
+                    throw new Error('API 回應無效或無員工資料');
+                }
+                
+            } catch (error) {
+                console.error('❌ 載入員工列表失敗:', error);
+                console.error('錯誤詳情:', {
+                    message: error.message,
+                    stack: error.stack,
+                    retryCount
+                });
+                
+                // ⭐ 如果重試次數未超過3次，則重試
+                if (retryCount < 3) {
+                    console.warn(`⚠️ 1秒後重試... (第 ${retryCount + 1} 次)`);
+                    setTimeout(() => loadEmployeeList(retryCount + 1), 1000);
+                } else {
+                    // 所有下拉選單顯示載入失敗
+                    ['config-employee-select', 'calc-employee-select', 'hourly-employee-select'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el) el.innerHTML = '<option value="">載入失敗，請重新整理頁面</option>';
+                    });
+                }
+            }
+        }
+        /**
+         * ⭐ 員工選擇變更事件
+         */
+        function onEmployeeSelect() {
+            const selectEl = document.getElementById('config-employee-select');
+            const employeeIdEl = document.getElementById('config-employee-id');
+            const employeeNameEl = document.getElementById('config-employee-name');
+            
+            if (!selectEl || !employeeIdEl || !employeeNameEl) return;
+            
+            const selectedValue = selectEl.value;
+            
+            if (selectedValue) {
+                try {
+                    const employee = JSON.parse(selectedValue);
+                    
+                    // 自動填入員工ID和姓名
+                    employeeIdEl.value = employee.userId;
+                    employeeNameEl.value = employee.name;
+                    
+                    console.log(`✅ 選擇員工: ${employee.name} (${employee.userId})`);
+                    
+                    // ⭐ 可選：自動載入該員工的現有薪資設定
+                    loadExistingSalaryConfig(employee.userId);
+                    
+                } catch (error) {
+                    console.error('解析員工資料失敗:', error);
+                    employeeIdEl.value = '';
+                    employeeNameEl.value = '';
+                }
+            } else {
+                // 清空欄位
+                employeeIdEl.value = '';
+                employeeNameEl.value = '';
+            }
+        }
+
+        /**
+         * ⭐ 載入員工現有薪資設定（可選功能）
+         */
+        async function loadExistingSalaryConfig(employeeId) {
+            try {
+                console.log(`📥 檢查員工 ${employeeId} 的現有薪資設定...`);
+                
+                const res = await callApifetch(`getEmployeeSalaryTW&employeeId=${encodeURIComponent(employeeId)}`);
+                
+                if (res.ok && res.data) {
+                    console.log('✅ 找到現有薪資設定，自動填入表單');
+                    
+                    // 自動填入現有設定
+                    const data = res.data;
+                    
+                    // 基本資訊
+                    const idNumberEl = document.getElementById('config-id-number');
+                    const employeeTypeEl = document.getElementById('config-employee-type');
+                    const salaryTypeEl = document.getElementById('config-salary-type');
+                    const baseSalaryEl = document.getElementById('config-base-salary');
+                    
+                    if (idNumberEl) idNumberEl.value = data['身分證字號'] || '';
+                    if (employeeTypeEl) employeeTypeEl.value = data.employeeType || '正職';
+                    // if (salaryTypeEl) salaryTypeEl.value = data.salaryType || '月薪';
+                    if (salaryTypeEl && data.salaryType) salaryTypeEl.value = data.salaryType;
+                    if (baseSalaryEl) baseSalaryEl.value = data.baseSalary || '';
+                    
+                    // 津貼
+                    const positionAllowanceEl = document.getElementById('config-position-allowance');
+                    const mealAllowanceEl = document.getElementById('config-meal-allowance');
+                    const transportAllowanceEl = document.getElementById('config-transport-allowance');
+                    const attendanceBonusEl = document.getElementById('config-attendance-bonus');
+                    const performanceBonusEl = document.getElementById('config-performance-bonus');
+                    const otherAllowancesEl = document.getElementById('config-other-allowances');
+                    
+                    if (positionAllowanceEl) positionAllowanceEl.value = data.positionAllowance || 0;
+                    if (mealAllowanceEl) mealAllowanceEl.value = data.mealAllowance || 0;
+                    if (transportAllowanceEl) transportAllowanceEl.value = data.transportAllowance || 0;
+                    if (attendanceBonusEl) attendanceBonusEl.value = data.attendanceBonus || 0;
+                    if (performanceBonusEl) performanceBonusEl.value = data.performanceBonus || 0;
+                    if (otherAllowancesEl) otherAllowancesEl.value = data.otherAllowances || 0;
+                    
+                    // 銀行資訊
+                    const bankCodeEl = document.getElementById('config-bank-code');
+                    const bankAccountEl = document.getElementById('config-bank-account');
+                    const hireDateEl = document.getElementById('config-hire-date');
+                    const paymentDayEl = document.getElementById('config-payment-day');
+                    
+                    if (bankCodeEl) bankCodeEl.value = data.bankCode || '';
+                    if (bankAccountEl) bankAccountEl.value = data.bankAccount || '';
+                    if (paymentDayEl) paymentDayEl.value = data.paymentDay || '5';
+                    
+                    // 扣款
+                    const pensionRateEl = document.getElementById('config-pension-rate');
+                    const welfareFeeEl = document.getElementById('config-welfare-fee');
+                    const dormitoryFeeEl = document.getElementById('config-dormitory-fee');
+                    const groupInsuranceEl = document.getElementById('config-group-insurance');
+                    const otherDeductionsEl = document.getElementById('config-other-deductions');
+                    
+                    if (pensionRateEl) pensionRateEl.value = data.pensionSelfRate || 0;
+                    if (welfareFeeEl) welfareFeeEl.value = data.welfareFee || 0;
+                    if (dormitoryFeeEl) dormitoryFeeEl.value = data.dormitoryFee || 0;
+                    if (groupInsuranceEl) groupInsuranceEl.value = data.groupInsurance || 0;
+                    if (otherDeductionsEl) otherDeductionsEl.value = data.otherDeductions || 0;
+                    
+                    // 備註
+                    const noteEl = document.getElementById('config-note');
+                    if (noteEl) noteEl.value = data.note || '';
+                    
+                    // 觸發自動計算
+                    autoCalculateDeductions();
+                    
+                    showNotification('✅ 已載入該員工的現有薪資設定', 'info');
+                    
+                } else {
+                    console.log('ℹ️ 該員工尚無薪資設定，使用空白表單');
+                }
+                
+            } catch (error) {
+                console.error('載入現有薪資設定失敗:', error);
+            }
+        }
+
+        // ⭐ 新增：手動計算扣款函數
+        function manualCalculateDeductions() {
+            const baseSalary = parseFloat(document.getElementById('config-base-salary').value) || 0;
+            const pensionRate = parseFloat(document.getElementById('config-pension-rate').value) || 0;
+            
+            if (baseSalary <= 0) {
+                showNotification('請先輸入基本薪資', 'warning');
+                return;
+            }
+            
+            // 取得投保薪資級距
+            const insuredSalary = getInsuredSalary(baseSalary);
+            
+            // 計算法定扣款
+            const laborFee = Math.round(insuredSalary * 0.115 * 0.2);
+            const healthFee = Math.round(insuredSalary * 0.0517 * 0.3);
+            const employmentFee = Math.round(insuredSalary * 0.01 * 0.2);
+            const pensionSelf = Math.round(insuredSalary * (pensionRate / 100));
+            
+            // 計算所得稅
+            let incomeTax = 0;
+            if (baseSalary > 34000) {
+                incomeTax = Math.round((baseSalary - 34000) * 0.05);
+            }
+            
+            // 更新欄位
+            document.getElementById('config-labor-fee').value = laborFee;
+            document.getElementById('config-health-fee').value = healthFee;
+            document.getElementById('config-employment-fee').value = employmentFee;
+            document.getElementById('config-pension-self').value = pensionSelf;
+            document.getElementById('config-income-tax').value = incomeTax;
+            
+            // 更新試算預覽
+            updateSalaryPreview();
+            
+            showNotification('✅ 扣款已計算完成', 'success');
+        }
+
+        // ⭐ 新增：更新薪資試算預覽
+        function updateSalaryPreview() {
+            const baseSalary = parseFloat(document.getElementById('config-base-salary').value) || 0;
+            
+            // 津貼
+            const positionAllowance = parseFloat(document.getElementById('config-position-allowance').value) || 0;
+            const mealAllowance = parseFloat(document.getElementById('config-meal-allowance').value) || 0;
+            const transportAllowance = parseFloat(document.getElementById('config-transport-allowance').value) || 0;
+            const attendanceBonus = parseFloat(document.getElementById('config-attendance-bonus').value) || 0;
+            const performanceBonus = parseFloat(document.getElementById('config-performance-bonus').value) || 0;
+            const otherAllowances = parseFloat(document.getElementById('config-other-allowances').value) || 0;
+            
+            // 法定扣款
+            const laborFee = parseFloat(document.getElementById('config-labor-fee').value) || 0;
+            const healthFee = parseFloat(document.getElementById('config-health-fee').value) || 0;
+            const employmentFee = parseFloat(document.getElementById('config-employment-fee').value) || 0;
+            const pensionSelf = parseFloat(document.getElementById('config-pension-self').value) || 0;
+            const incomeTax = parseFloat(document.getElementById('config-income-tax').value) || 0;
+            
+            // 其他扣款
+            const welfareFee = parseFloat(document.getElementById('config-welfare-fee').value) || 0;
+            const dormitoryFee = parseFloat(document.getElementById('config-dormitory-fee').value) || 0;
+            const groupInsurance = parseFloat(document.getElementById('config-group-insurance').value) || 0;
+            const otherDeductions = parseFloat(document.getElementById('config-other-deductions').value) || 0;
+            
+            // 計算總額
+            const allowancesTotal = positionAllowance + mealAllowance + transportAllowance + 
+                                attendanceBonus + performanceBonus + otherAllowances;
+            const legalDeductions = laborFee + healthFee + employmentFee + pensionSelf + incomeTax;
+            const otherDeductionsTotal = welfareFee + dormitoryFee + groupInsurance + otherDeductions;
+            const netSalary = baseSalary + allowancesTotal - legalDeductions - otherDeductionsTotal;
+            
+            // 其他資訊
+            const insuredSalary = getInsuredSalary(baseSalary);
+            const hourlyRate = Math.round(baseSalary / 30 / 8);
+            
+            // 更新顯示
+            const previewEls = {
+                'preview-base-salary': baseSalary,
+                'preview-allowances-total': allowancesTotal,
+                'preview-insured-salary': insuredSalary,
+                'preview-hourly-rate': hourlyRate,
+                'preview-legal-deductions': legalDeductions,
+                'preview-other-deductions-total': otherDeductionsTotal,
+                'preview-net-salary': netSalary
+            };
+            
+            Object.entries(previewEls).forEach(([id, value]) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.textContent = `NT$ ${value.toLocaleString('zh-TW')}`;
+                }
+            });
+        }
+
+        /**
+         * ⭐ 月薪計算 - 員工選擇變更事件
+         */
+        function onCalcEmployeeSelect() {
+            const selectEl = document.getElementById('calc-employee-select');
+            const employeeIdEl = document.getElementById('calc-employee-id');
+            
+            if (!selectEl || !employeeIdEl) return;
+            
+            const selectedValue = selectEl.value;
+            
+            if (selectedValue) {
+                try {
+                    const employee = JSON.parse(selectedValue);
+                    employeeIdEl.value = employee.userId;
+                    console.log(`✅ 月薪計算選擇員工: ${employee.name} (${employee.userId})`);
+                } catch (error) {
+                    console.error('解析員工資料失敗:', error);
+                    employeeIdEl.value = '';
+                }
+            } else {
+                employeeIdEl.value = '';
+            }
+        }
+        /**
+         * ⭐ 時薪計算 - 員工選擇變更事件
+         */
+        function onHourlyEmployeeSelect() {
+            const selectEl = document.getElementById('hourly-employee-select');
+            const employeeIdEl = document.getElementById('hourly-employee-id');
+            
+            if (!selectEl || !employeeIdEl) return;
+            
+            const selectedValue = selectEl.value;
+            
+            if (selectedValue) {
+                try {
+                    const employee = JSON.parse(selectedValue);
+                    employeeIdEl.value = employee.userId;
+                    console.log(`✅ 時薪計算選擇員工: ${employee.name} (${employee.userId})`);
+                } catch (error) {
+                    console.error('解析員工資料失敗:', error);
+                    employeeIdEl.value = '';
+                }
+            } else {
+                employeeIdEl.value = '';
+            }
+        }
+    </script>
+</body>
+</html>

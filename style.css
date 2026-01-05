@@ -1,0 +1,683 @@
+/* style.css */
+
+/* ======================================= */
+/* 亮色模式 / 預設樣式 (Light Mode / Default) */
+/* ======================================= */
+body {
+    /* Tailwind: bg-gray-50 (Light Mode Base Background) */
+    background-color: #f8fafc;
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    /* 全域文字顏色 (Tailwind: text-gray-900) */
+    color: #1f2937;
+}
+
+/* --- Card --- */
+.card {
+    /* Tailwind: bg-white */
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    transition: all 0.3s ease-in-out;
+}
+
+/* --- Main Image (Logo) --- */
+.main-image {
+    width: auto;
+    max-width: 400px;
+    height: auto;
+    margin: 0 auto 1.5rem;
+    display: block;
+    object-fit: contain;
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 1rem;
+}
+
+/* 暗黑模式下的 Logo 調整 */
+html.dark .main-image {
+    background-color: white;
+    filter: none;
+}
+
+/* --- Primary Button --- */
+.btn-primary {
+    /* Tailwind: bg-indigo-600 */
+    background-color: #4f46e5;
+    color: white;
+    transition: background-color 0.2s;
+}
+.btn-primary:hover {
+    /* Tailwind: bg-indigo-700 */
+    background-color: #4338ca;
+}
+
+/* --- Secondary Button --- */
+.btn-secondary {
+    /* Tailwind: bg-gray-200 */
+    background-color: #e5e7eb;
+    /* Tailwind: text-gray-800 */
+    color: #374151;
+    transition: background-color 0.2s;
+}
+.btn-secondary:hover {
+    /* Tailwind: bg-gray-300 */
+    background-color: #d1d5db;
+}
+
+/* --- Warning Button --- */
+.btn-warning {
+    /* Tailwind: bg-orange-500 */
+    background-color: #f97316;
+    color: white;
+    transition: background-color 0.2s;
+}
+.btn-warning:hover {
+    /* Tailwind: bg-orange-600 */
+    background-color: #ea580c;
+}
+
+/* ======================================= */
+/* 暗黑模式 / Dark Mode (使用 html.dark)      */
+/* ======================================= */
+
+/* --- 全域背景 --- */
+html.dark body {
+    /* Tailwind: dark:bg-gray-900 */
+    background-color: #111827;
+    /* 全域文字顏色 (Tailwind: dark:text-gray-100) */
+    color: #f3f4f6;
+}
+
+/* --- Card --- */
+html.dark .card {
+    /* Tailwind: dark:bg-gray-800 */
+    background-color: #1f2937;
+    /* 調整陰影以適應深色背景 */
+    box-shadow: 0 10px 15px -3px rgb(255 255 255 / 0.05), 0 4px 6px -4px rgb(255 255 255 / 0.05);
+}
+
+/* --- Primary Button --- */
+html.dark .btn-primary {
+    /* Tailwind: dark:bg-indigo-700 */
+    background-color: #4338ca;
+}
+html.dark .btn-primary:hover {
+    /* Tailwind: dark:bg-indigo-600 */
+    background-color: #4f46e5;
+}
+
+/* --- Secondary Button --- */
+html.dark .btn-secondary {
+    /* Tailwind: dark:bg-gray-700 */
+    background-color: #374151;
+    /* Tailwind: dark:text-gray-200 */
+    color: #e5e7eb;
+}
+html.dark .btn-secondary:hover {
+    /* Tailwind: dark:bg-gray-600 */
+    background-color: #4b5563;
+}
+
+/* ======================================= */
+/* 其他樣式 (Other Styles) */
+/* ======================================= */
+
+/* --- Fade In Animation --- */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Notification --- */
+.notification {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 50;
+    border-radius: 0.5rem;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    transform: translateX(200%);
+    transition: transform 0.5s ease-in-out;
+    background-color: white;
+}
+.notification.show {
+    transform: translateX(0);
+}
+
+html.dark .notification {
+    background-color: #374151;
+    color: #f3f4f6;
+}
+
+/* --- Day Cell Styles (日曆單元格) --- */
+.day-cell {
+    padding: 0.5rem;
+    text-align: center;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.2s;
+}
+
+/* 亮色模式 */
+.day-cell.future-day { background-color: #d1d5db; color: #4b5563; }
+.day-cell.normal-day { background-color: #f3f4f6; color: #1f2937; }
+.day-cell.abnormal-day { background-color: #fecaca; color: #ef4444; }
+.day-cell.pending-adjustment { background-color: #fde68a; color: #d97706; }
+.day-cell.pending-virtual { background-color: #e9d5ff; color: #9333ea; }
+.day-cell.approved-virtual { background-color: #bfdbfe; color: #2563eb; }
+.day-cell.day-off { background-color: #ccfbf1; color: #0d9488; }
+.day-cell.today { background-color: #86efac; color: #166534; font-weight: bold; }
+.day-cell:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px -1px rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+/* 暗黑模式下的日曆單元格 */
+html.dark .day-cell.future-day { background-color: #374151; color: #9ca3af; }
+html.dark .day-cell.normal-day { background-color: #1f2937; color: #d1d5db; }
+html.dark .day-cell.abnormal-day { background-color: #991b1b; color: #fecaca; }
+html.dark .day-cell.pending-adjustment { background-color: #92400e; color: #fde68a; }
+html.dark .day-cell.pending-virtual { background-color: #581c87; color: #e9d5ff; }
+html.dark .day-cell.approved-virtual { background-color: #1e40af; color: #bfdbfe; }
+html.dark .day-cell.day-off { background-color: #065f46; color: #ccfbf1; }
+html.dark .day-cell.today {
+    background-color: #15803d;
+    color: #bbf7d0;
+}
+html.dark .day-cell:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px -1px rgb(255 255 255 / 0.1), 0 1px 2px -1px rgb(255 255 255 / 0.05);
+}
+
+/* --- Map Styles --- */
+#map {
+    background: #1e1e1e;
+}
+
+/* 暗黑模式下的 Leaflet 地圖 */
+html.dark .leaflet-layer,
+html.dark .leaflet-control-zoom-in,
+html.dark .leaflet-control-zoom-out,
+html.dark .leaflet-control-attribution {
+    filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+
+/* ======================================= */
+/* 薪資系統專屬樣式 (Salary System Styles) */
+/* ======================================= */
+
+.salary-card-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.metric-card {
+    position: relative;
+    overflow: hidden;
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100px;
+    height: 100px;
+    background: radial-gradient(circle, rgba(102,126,234,0.1) 0%, transparent 70%);
+}
+
+.metric-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(102, 126, 234, 0.15);
+}
+
+html.dark .metric-card {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+.amount-display {
+    font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+}
+
+/* 修復紅色金額顯示 */
+.amount-display.text-red-500 {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+}
+
+/* 修復白色金額顯示 */
+.amount-display.text-white {
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: white;
+    background-clip: unset;
+    color: white;
+}
+
+.detail-section {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid #e2e8f0;
+}
+
+html.dark .detail-section {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    transition: all 0.2s;
+}
+
+.detail-row:last-child {
+    border-bottom: none;
+}
+
+.detail-row:hover {
+    background: rgba(102,126,234,0.05);
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    border-radius: 0.5rem;
+}
+
+html.dark .detail-row {
+    border-bottom-color: rgba(255,255,255,0.05);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-header::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 2px;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.status-calculated {
+    background: linear-gradient(135deg, #4facfe15 0%, #00f2fe15 100%);
+    color: #0891b2;
+    border: 1px solid #06b6d420;
+}
+
+.status-paid {
+    background: linear-gradient(135deg, #11998e15 0%, #38ef7d15 100%);
+    color: #059669;
+    border: 1px solid #10b98120;
+}
+
+.history-item {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html.dark .history-item {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+.history-item:hover {
+    transform: translateX(8px);
+    box-shadow: 0 10px 20px rgba(102,126,234,0.15);
+    border-color: #667eea;
+}
+
+.form-section {
+    background: linear-gradient(135deg, #667eea05 0%, #764ba205 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    border: 1px solid rgba(102,126,234,0.1);
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-label {
+    display: block;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+html.dark .input-label {
+    color: #cbd5e1;
+}
+
+.bank-info-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #667eea10 0%, #764ba210 100%);
+    border-radius: 8px;
+    border: 1px solid rgba(102,126,234,0.2);
+    font-size: 0.875rem;
+}
+
+/* 表單輸入元素 */
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    background-color: white;
+    color: #1f2937;
+    transition: all 0.2s;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+html.dark .form-input,
+html.dark .form-select,
+html.dark .form-textarea {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #f3f4f6;
+}
+
+html.dark .form-input:focus,
+html.dark .form-select:focus,
+html.dark .form-textarea:focus {
+    border-color: #818cf8;
+    box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.1);
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e5e7eb;
+    border-top-color: #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+html.dark .loading-spinner {
+    border-color: #374151;
+    border-top-color: #818cf8;
+}
+
+/* Info Card (用於薪資計算結果顯示) */
+.info-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+}
+
+html.dark .info-card {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+.info-card.salary-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+}
+
+.info-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+html.dark .info-label {
+    color: #9ca3af;
+}
+
+.info-card.salary-card .info-label {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.info-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    font-family: 'SF Mono', 'Consolas', 'Monaco', monospace;
+}
+
+html.dark .info-value {
+    color: #f3f4f6;
+}
+
+.info-card.salary-card .info-value {
+    color: white;
+}
+
+/* ======================================= */
+/* 地點管理功能樣式 (Location Management) */
+/* ======================================= */
+
+/* 自訂拉桿樣式 */
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #4F46E5;
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 0 2px rgba(0,0,0,0.3);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #4F46E5;
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 0 2px rgba(0,0,0,0.3);
+    border: none;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    background: #4338CA;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+    background: #4338CA;
+}
+
+html.dark input[type="range"]::-webkit-slider-thumb {
+    background: #818CF8;
+}
+
+html.dark input[type="range"]::-moz-range-thumb {
+    background: #818CF8;
+}
+
+/* 搜尋結果樣式 */
+#search-results-list li {
+    padding: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.2s;
+}
+
+#search-results-list li:hover {
+    background-color: #f3f4f6;
+}
+
+html.dark #search-results-list li {
+    border-bottom: 1px solid #4b5563;
+}
+
+html.dark #search-results-list li:hover {
+    background-color: #374151;
+}
+
+#search-results-list li:last-child {
+    border-bottom: none;
+}
+
+/* 加班資訊卡片樣式 */
+.overtime-card {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    border: 2px solid #fb923c;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-top: 0.75rem;
+    box-shadow: 0 2px 8px rgba(251, 146, 60, 0.15);
+}
+
+.dark .overtime-card {
+    background: linear-gradient(135deg, rgba(251, 146, 60, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%);
+    border-color: rgba(251, 146, 60, 0.5);
+}
+
+/* 加班時數標籤 */
+.overtime-badge {
+    background: #ea580c;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* 日曆上的加班標記 */
+.day-cell.has-overtime {
+    position: relative;
+}
+
+.day-cell.has-overtime::after {
+    content: '⏰';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 10px;
+}
+
+/* ======================================= */
+/* 請假日樣式 (Leave Day Styles) */
+/* ======================================= */
+
+/* 亮色模式 - 請假日 */
+.day-cell.leave-day {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e40af;
+    border: 2px solid #3b82f6;
+}
+
+/* 暗黑模式 - 請假日 */
+html.dark .day-cell.leave-day {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    color: #bfdbfe;
+    border: 2px solid #3b82f6;
+}
+
+/* 日期單元格內容佈局 */
+.day-cell-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    position: relative;
+}
+
+.day-number {
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* 狀態圖示容器 */
+.status-icons {
+    display: flex;
+    gap: 2px;
+    margin-top: 2px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.status-icon {
+    font-size: 0.625rem;
+    line-height: 1;
+}
+
+/* 響應式調整 */
+@media (max-width: 640px) {
+    .status-icon {
+        font-size: 0.5rem;
+    }
+    
+    .day-number {
+        font-size: 0.75rem;
+    }
+}
+
+/* 請假且打卡異常的日期（同時顯示兩種狀態） */
+.day-cell.leave-day.abnormal-day {
+    background: linear-gradient(135deg, #fecaca 0%, #bfdbfe 100%);
+    border: 2px dashed #ef4444;
+}
+
+html.dark .day-cell.leave-day.abnormal-day {
+    background: linear-gradient(135deg, #991b1b 0%, #1e40af 100%);
+    border: 2px dashed #ef4444;
+}
