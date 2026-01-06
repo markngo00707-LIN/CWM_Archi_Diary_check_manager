@@ -11,7 +11,7 @@ let weekShiftCache = null;  // 快取本週排班
 // 載入語系檔
 async function loadTranslations(lang) {
     try {
-        const res = await fetch(`https://eric693.github.io/Allianz_check_manager/i18n/${lang}.json`);
+        const res = await fetch(`https://markngo00707-LIN.github.io/CWM_Archi_Diary_check_manager/i18n/${lang}.json`);
         if (!res.ok) {
             throw new Error(`HTTP 錯誤: ${res.status}`);
         }
