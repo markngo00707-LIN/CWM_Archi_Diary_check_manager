@@ -1,8 +1,8 @@
 // Constants.gs - 系統常數定義（完整版 - 含所有假別）
 
 // ==================== LINE 登入設定 ====================
-const LINE_CHANNEL_ID     = PropertiesService.getScriptProperties().getProperty("2008825122");
-const LINE_CHANNEL_SECRET = PropertiesService.getScriptProperties().getProperty("a912f7288048329f745edc42d9c21f59");
+const LINE_CHANNEL_ID     = PropertiesService.getScriptProperties().getProperty("LINE_CHANNEL_ID");
+const LINE_CHANNEL_SECRET = PropertiesService.getScriptProperties().getProperty("LINE_CHANNEL_SECRET");
 const LINE_REDIRECT_URL   = "https://markngo00707-LIN.github.io/CWM_Archi_Diary_check_manager/";
 
 // ==================== Session 設定 ====================
