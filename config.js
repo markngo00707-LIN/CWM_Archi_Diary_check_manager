@@ -6,7 +6,7 @@ const API_CONFIG = {
 
   // 2. 請填入您的前端網頁網址 (例如 GitHub Pages 網址)
   // 注意：此網址必須與 LINE Developers Console 中的 Callback URL 完全一致
-  redirectUrl: "https://markngo00707-LIN.github.io/CWM_Archi_Diary_check_manager/"
+  redirectUrl: "https://markngo00707-lin.github.io/CWM_Archi_Diary_check_manager/"
 };
 
 // 👇 為了兼容性，同時定義全域變數 apiUrl
