@@ -3,7 +3,7 @@
 // ==================== LINE 登入設定 ====================
 const LINE_CHANNEL_ID     = PropertiesService.getScriptProperties().getProperty("LINE_CHANNEL_ID");
 const LINE_CHANNEL_SECRET = PropertiesService.getScriptProperties().getProperty("LINE_CHANNEL_SECRET");
-const LINE_REDIRECT_URL   = "https://markngo00707-LIN.github.io/CWM_Archi_Diary_check_manager/";
+const LINE_REDIRECT_URL   = "https://markngo00707-lin.github.io/CWM_Archi_Diary_check_manager/";
 
 // ==================== Session 設定 ====================
 const SESSION_TTL_MS = 7000 * 60 * 60 * 24; // 1 天
