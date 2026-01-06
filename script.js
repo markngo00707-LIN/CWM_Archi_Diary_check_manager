@@ -3693,7 +3693,18 @@ async function doPunch(type) {
     navigator.geolocation.getCurrentPosition(async (pos) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
-        const action = `punch&type=${encodeURIComponent(type)}&lat=${lat}&lng=${lng}&note=${encodeURIComponent(navigator.userAgent)}`;
+        
+        // 取得用戶端 IP（用於 IP 白名單驗證）
+        let clientIP = '';
+        try {
+            const ipRes = await fetch('https://api.ipify.org?format=json');
+            const ipData = await ipRes.json();
+            clientIP = ipData.ip || '';
+        } catch (ipError) {
+            console.warn('無法取得 IP:', ipError);
+        }
+        
+        const action = `punch&type=${encodeURIComponent(type)}&lat=${lat}&lng=${lng}&note=${encodeURIComponent(navigator.userAgent)}&clientIP=${encodeURIComponent(clientIP)}`;
         
         try {
             const res = await callApifetch(action);
@@ -4106,3 +4117,184 @@ async function saveNewName(userId) {
         showNotification('更新失敗，請稍後再試', 'error');
     }
 }
+// ==================== IP 白名單管理功能 ====================
+
+/**
+ * 載入 IP 白名單
+ */
+async function loadIPWhitelist() {
+    const loadingEl = document.getElementById('ip-list-loading');
+    const emptyEl = document.getElementById('ip-list-empty');
+    const listEl = document.getElementById('ip-list');
+    
+    try {
+        if (loadingEl) loadingEl.style.display = 'block';
+        if (emptyEl) emptyEl.style.display = 'none';
+        if (listEl) listEl.innerHTML = '';
+        
+        const res = await callApifetch('getIPWhitelist');
+        
+        if (loadingEl) loadingEl.style.display = 'none';
+        
+        if (!res.ok) {
+            showNotification(res.msg || '載入 IP 白名單失敗', 'error');
+            return;
+        }
+        
+        const ipList = res.ipList || [];
+        
+        if (ipList.length === 0) {
+            if (emptyEl) emptyEl.style.display = 'block';
+            return;
+        }
+        
+        // 渲染 IP 列表
+        ipList.forEach(ip => {
+            const card = document.createElement('div');
+            card.className = 'flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg';
+            card.innerHTML = `
+                <div class="flex-1">
+                    <div class="flex items-center gap-2">
+                        <span class="font-mono text-sm font-semibold text-gray-800 dark:text-white">${ip.ip}</span>
+                        <span class="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs rounded-full">啟用</span>
+                    </div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">${ip.name}</div>
+                    ${ip.description ? `<div class="text-xs text-gray-500 dark:text-gray-500">${ip.description}</div>` : ''}
+                </div>
+                <button onclick="deleteIP('${ip.id}', '${ip.ip}')" 
+                        class="px-3 py-1 bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 rounded-lg text-sm font-medium transition-colors">
+                    刪除
+                </button>
+            `;
+            listEl.appendChild(card);
+        });
+        
+    } catch (error) {
+        console.error('載入 IP 白名單失敗:', error);
+        if (loadingEl) loadingEl.style.display = 'none';
+        showNotification('載入失敗，請稍後再試', 'error');
+    }
+}
+
+/**
+ * 新增 IP 到白名單
+ */
+async function addIPToWhitelist() {
+    const ipInput = document.getElementById('ip-address-input');
+    const nameInput = document.getElementById('ip-name-input');
+    const descInput = document.getElementById('ip-description-input');
+    const addBtn = document.getElementById('add-ip-btn');
+    
+    const ip = ipInput?.value?.trim();
+    const name = nameInput?.value?.trim();
+    const description = descInput?.value?.trim();
+    
+    if (!ip) {
+        showNotification('請輸入 IP 位址', 'error');
+        ipInput?.focus();
+        return;
+    }
+    
+    if (!name) {
+        showNotification('請輸入名稱', 'error');
+        nameInput?.focus();
+        return;
+    }
+    
+    // 驗證 IP 格式
+    const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}(\/\d{1,2})?$/;
+    if (!ipv4Regex.test(ip)) {
+        showNotification('IP 格式不正確，請輸入如 192.168.1.1 或 192.168.1.0/24', 'error');
+        ipInput?.focus();
+        return;
+    }
+    
+    try {
+        if (addBtn) addBtn.disabled = true;
+        showNotification('新增中...', 'info');
+        
+        const res = await callApifetch(
+            `addIPWhitelist&ip=${encodeURIComponent(ip)}&name=${encodeURIComponent(name)}&description=${encodeURIComponent(description)}`
+        );
+        
+        if (res.ok) {
+            showNotification('✅ IP 已新增到白名單', 'success');
+            
+            // 清空輸入
+            if (ipInput) ipInput.value = '';
+            if (nameInput) nameInput.value = '';
+            if (descInput) descInput.value = '';
+            
+            // 重新載入列表
+            await loadIPWhitelist();
+        } else {
+            showNotification(res.msg || '新增失敗', 'error');
+        }
+        
+    } catch (error) {
+        console.error('新增 IP 失敗:', error);
+        showNotification('新增失敗，請稍後再試', 'error');
+    } finally {
+        if (addBtn) addBtn.disabled = false;
+    }
+}
+
+/**
+ * 刪除 IP
+ */
+async function deleteIP(ipId, ipAddress) {
+    if (!confirm(`確定要刪除 IP「${ipAddress}」嗎？`)) {
+        return;
+    }
+    
+    try {
+        showNotification('刪除中...', 'info');
+        
+        const res = await callApifetch(`deleteIPWhitelist&ipId=${encodeURIComponent(ipId)}`);
+        
+        if (res.ok) {
+            showNotification('✅ IP 已從白名單移除', 'success');
+            await loadIPWhitelist();
+        } else {
+            showNotification(res.msg || '刪除失敗', 'error');
+        }
+        
+    } catch (error) {
+        console.error('刪除 IP 失敗:', error);
+        showNotification('刪除失敗，請稍後再試', 'error');
+    }
+}
+
+/**
+ * 取得目前 IP
+ */
+async function getCurrentIP() {
+    const displayEl = document.getElementById('current-ip-display');
+    const ipInput = document.getElementById('ip-address-input');
+    
+    try {
+        if (displayEl) displayEl.textContent = '取得中...';
+        
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        const currentIP = data.ip;
+        
+        if (displayEl) displayEl.textContent = `您目前的 IP: ${currentIP}`;
+        if (ipInput) ipInput.value = currentIP;
+        
+    } catch (error) {
+        console.error('取得 IP 失敗:', error);
+        if (displayEl) displayEl.textContent = '無法取得 IP';
+    }
+}
+
+// 初始化時載入 IP 白名單（管理員頁面）
+document.addEventListener('DOMContentLoaded', function() {
+    // 當切換到管理員分頁時載入
+    const adminTab = document.getElementById('tab-admin-btn');
+    if (adminTab) {
+        adminTab.addEventListener('click', () => {
+            setTimeout(() => loadIPWhitelist(), 500);
+        });
+    }
+});
