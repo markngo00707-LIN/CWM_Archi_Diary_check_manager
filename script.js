@@ -433,9 +433,11 @@ async function ensureLogin()
         const user = JSON.parse(cachedUser);
         
         // 直接顯示 UI（不等待 API）
-        if (user.dept === "管理員") {
-          document.getElementById('tab-admin-btn').style.display = 'block';
-        }
+        // 暫時開放管理員分頁給所有人（測試用）
+        document.getElementById('tab-admin-btn').style.display = 'block';
+        // if (user.dept === "管理員") {
+        //   document.getElementById('tab-admin-btn').style.display = 'block';
+        // }
         
         document.getElementById("user-name").textContent = user.name;
         document.getElementById("profile-img").src = user.picture;
@@ -468,9 +470,11 @@ async function ensureLogin()
           localStorage.setItem("cachedUser", JSON.stringify(res.user));
           localStorage.setItem("cacheTime", Date.now().toString());
           
-          if (res.user.dept === "管理員") {
-            document.getElementById('tab-admin-btn').style.display = 'block';
-          }
+          // 暫時開放管理員分頁給所有人（測試用）
+          document.getElementById('tab-admin-btn').style.display = 'block';
+          // if (res.user.dept === "管理員") {
+          //   document.getElementById('tab-admin-btn').style.display = 'block';
+          // }
           
           document.getElementById("user-name").textContent = res.user.name;
           document.getElementById("profile-img").src = res.user.picture || res.user.rate;
@@ -2112,6 +2116,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             displayAdminAnnouncements();
             initAdminAnalysis();
             loadAllUsers();
+            loadIPWhitelist();  // 載入 IP 白名單
         } else if (tabId === 'overtime-view') {
             initOvertimeTab();
         } else if (tabId === 'leave-view') {
@@ -2215,9 +2220,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 // ⭐⭐⭐ 關鍵：不需要再呼叫 ensureLogin 或 initApp
                 // 直接顯示介面
                 
-                if (res.user.dept === "管理員") {
-                  document.getElementById('tab-admin-btn').style.display = 'block';
-                }
+                // 暫時開放管理員分頁給所有人（測試用）
+                document.getElementById('tab-admin-btn').style.display = 'block';
+                // if (res.user.dept === "管理員") {
+                //   document.getElementById('tab-admin-btn').style.display = 'block';
+                // }
                 
                 document.getElementById("user-name").textContent = res.user.name;
                 document.getElementById("profile-img").src = res.user.picture;
